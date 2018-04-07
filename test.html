@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- <button id="test" onclick="test2()">test</button> -->
+    <a id="test" href="javascript:void(0);">123</a>
+    <script src="./common/jquery-min.js"></script>
+    <script>
+        function test2() {
+            alert('1')
+        }
+        (function () {
+            $(document).ready(function () {
+                // $('#test').click(function() {
+
+                // })
+                document.getElementById('test').addEventListener('click', function () {
+                    alert('a')
+                })
+                $('#test').trigger('click')
+                function trigger() {
+                    //IE
+                    if (document.all) {
+                        document.getElementById("clickMe").click();
+                    }
+                    // 其它浏览器
+                    else {
+                        var e = document.createEvent("MouseEvents");
+                        e.initEvent("click", true, true);　　　　　　　　　　　　　　//这里的click可以换成你想触发的行为
+                        document.getElementById("test").dispatchEvent(e);　　　//这里的clickME可以换成你想触发行为的DOM结点
+                    }
+                }
+            })
+        })()
+    </script>
+</body>
+
+</html>

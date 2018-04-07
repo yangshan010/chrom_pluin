@@ -1,0 +1,42 @@
+{
+    "manifest_version": 2,
+    "name": "demo",
+    "version": "1.0.0",
+    "description": "简单的Chrome扩展demo",
+    "icons":
+    {
+        "16": "img/timg.jpeg",
+        "48": "img/timg.jpeg",
+        "128": "img/timg.jpeg"
+    },
+    "browser_action": 
+    {
+        "default_icon": "img/timg.jpeg",
+        "default_popup": "popup.html"
+    },
+    "content_scripts": 
+    [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["common/jquery-min.js","js/index.js"],
+            "run_at": "document_idle"
+        }
+        
+    ],
+    "permissions":
+    [
+        "contextMenus", 
+        "tabs", 
+        "notifications", 
+        "webRequest",
+        "webRequestBlocking",
+        "storage",
+        "tabs", "*://pub.alimama.com/*", "webRequest", "webRequestBlocking"  
+    ],
+    "homepage_url": "https://romic.cn",
+    "default_locale": "zh_CN",
+    "background":
+    {
+        "scripts": ["js/background.js"]
+    }
+}

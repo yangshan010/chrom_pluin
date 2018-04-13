@@ -69,7 +69,7 @@
          passwordBtn.id = 'cxPasswordBtn'
          setTimeout(function(){
           $('#cxPasswordBtn').trigger('click')
-          console.log($('#clipboard-target').val())
+          console.log($('#clipboard-target').val())   //  有没有领券的id是不同的
           var code = $('#clipboard-target').val()
           if($('#clipboard-target').val()) {
             window.location.href = 'http://pub.alimama.com/promo/search/index.htm' // 这里不跳首页 关闭输入框 
@@ -90,6 +90,8 @@
       document.getElementById(id).dispatchEvent(e);　　　//这里的clickME可以换成你想触发行为的DOM结点
     }
     getSearchInput(); //开始
+    // 1:日志 2:就在搜索页操作 3:tab操作 4:插件开关
+
   })
 
 })()

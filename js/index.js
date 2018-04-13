@@ -3,14 +3,7 @@
 //     
 //    
 // });
-// zhege shi v1 
-
-
-// 这里是测试
-
-
-
-// 这里是测试2
+// 这里是测试1
 (function () {
   $(document).ready(function () {
     /**

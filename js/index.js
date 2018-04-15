@@ -7,7 +7,46 @@
 
 (function () {
   $(document).ready(function () {
+    // var search_button1 = document.getElementsByClassName('search-btn')[0];
+    // search_button1.style = 'display:none'
     /**
+     * 请求查询接口，查看是否有淘口令需要需要转化
+     * **/
+    /**/
+    var searchContent = '' // 搜索的内容
+    var orderId = '' // 这次查询的id
+    function quertyState () {
+      $.get('http://fanli.romic.cn/fanli/taobao/fanli/queryState',function(data, status) {
+        console.log(data);
+        if (data.errno  == 0) {
+          searchContent = data.body.goodsLink;
+          orderId = data.body.id
+          getSearchInput(searchContent)
+        } else  {
+          console.log(data.error)
+          setTimeout(function() {
+            quertyState()
+          },1000)
+        }
+
+      })
+    }
+    quertyState();
+    
+    /**
+     * 提交查询结果
+     * params: {
+     *    id: ''  必填
+     *    failed: '' 必填 0: 成功，1:失败
+     *    newTaobaoPassoword: <string>  非必填，当failed等于1的时候，不传ßß
+     * }
+     * **/  
+    function updataPassword (params,cb) {
+      $.post('http://fanli.romic.cn/fanli/taobao/fanli/update',params,function(data) {
+          // 发送成功后，执行。。。
+          cb(data)
+      })
+    }
 //      * 在onload结束后，网页还会加载一遍（不晓得为啥）,这个时候虽然能拿到输入框的值，但是里面的是空的，所以每隔300毫秒检查一遍
 //      * 这里应该加个次数，大于多少次，告诉后端系统错误
 //      * **/
@@ -15,28 +54,27 @@
       var search_button = document.getElementsByClassName('search-btn')
       var code = '' // 淘口令
       var code_2 = '' // 第二个淘口令
-      //￥SAQw0rNigp4￥
-      //￥nxkD0rNiNLk￥
-    function getSearchInput() {   // 搜索框赋值，并点击
+    function getSearchInput(searchContent) {   // 搜索框赋值，并点击
       // 这里加上检查本地缓存，要是有缓存，就代表之前失败了，要重新获取
       console.log('第一步====>>初始化',new Date())
       // 这里需要加上没有商品的情况
       if (search_input.length > 0 && search_button.length > 0) {
         console.log('第一步====>>页面加载完成')
-        // search_input[0].value = "WE06S9DN2000";
-        search_input[0].value = "2018新款女宝宝短袖小童夏装夏季套装两件套0-6个月婴儿衣服123岁";
+        search_input[0].value = searchContent;
          console.log('第一步====>>输入框赋值完毕')
         $('.search-btn')[0].id = 'xcFL';
         console.log('第一步====>>搜索按钮加上id')
         setTimeout(function () {
           $('#xcFL').trigger('click')  //这里要检查报错  所有的都要检查报错，报错就要重新开始。  所有的点击事件都要检查报错，报错就重新点击
           console.log('第一步====>>点击搜索按钮')
-         clickExtension()
         }, 300)
+        setTimeout(function() {
+          clickExtension()
+        },700)
       } else {
         console.log('第一步====>>等待页面加载')
         setTimeout(function () {  // 每过300毫秒重新检查一次  
-          getSearchInput();
+          getSearchInput(searchContent);
         }, 300);
       }
     };
@@ -53,10 +91,21 @@
         console.log('第二步====>>点击推广')
         submitExtension()
       } else {
-        console.log('第二步====>>获取推广按钮Dom失败，重新获取')
-        setTimeout(function () {  // 每过300毫秒重新检查一次
-          clickExtension();
-        }, 300);
+        console.log('第二步====>>获取推广按钮Dom失败')
+         var noDataList = document.getElementsByClassName('no-data-list')
+         console.log('第二步====>>检查是否没有此商品链接')
+         if (noDataList.length > 0) {
+           // 如果大于0的话，就代表没有商品
+           console.log('第二步====>>次商品没有优惠链接')
+           updataPassword({id:orderId,failed:1},function() {
+            quertyState()
+           })
+         } else {
+          setTimeout(function () {  // 每过300毫秒重新检查一次
+            clickExtension();
+          }, 300);
+         }
+       
       }
     }
 
@@ -127,15 +176,25 @@
            } else {
              console.log('第四步====>>获取到淘口令,准备发送请求')
              var params = {
-              code : code  ||　code_2
+              newTaobaoPassword : code  ||　code_2,
+              id:orderId,
+              failed:0
              }
+             updataPassword(params,function(data) {
+                if (data.errno == 0) {
+                  document.getElementsByClassName('btn-gray')[0].id = 'xcCloseBtn'
+                  var search_box = document.getElementsByClassName('block-search-box')[0]
+                  search_box.style.display = 'none'
+                  setTimeout(function() {   // 休息5秒钟
+                    $('#xcCloseBtn').trigger('click')
+                    quertyState();
+                  },5000)
+                }
+             })
              console.log(params)
-             document.getElementsByClassName('btn-gray')[0].id = 'xcCloseBtn'
+             
             
-             setTimeout(function() {
-               $('#xcCloseBtn').trigger('click')
-                getSearchInput()
-             },5000)
+            
            }
           } 
     function trigger(id) { // 原生方法实现js模拟点击
@@ -143,7 +202,9 @@
       e.initEvent("click", true, true);　　　　　　　　　　　　　　//这里的click可以换成你想触发的行为
       document.getElementById(id).dispatchEvent(e);　　　//这里的clickME可以换成你想触发行为的DOM结点
     }
-    getSearchInput(); //开始
+
+    // getSearchInput(); //开始
+
     // 1:日志 2:就在搜索页操作 3:tab操作 4:插件开关
 
   })

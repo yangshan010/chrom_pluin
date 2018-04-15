@@ -32,12 +32,13 @@
         "webRequest",
         "webRequestBlocking",
         "storage",
-        "tabs", "*://pub.alimama.com/*", "webRequest", "webRequestBlocking"  
+        "tabs", "*://pub.alimama.com/*", "webRequest", "webRequestBlocking",
+        "http://fanli.romic.cn/*"  
     ],
     "homepage_url": "https://romic.cn",
     "default_locale": "zh_CN",
     "background":
     {
-        "scripts": ["js/background.js"]
+        "scripts": ["common/jquery-min.js","js/background.js"]
     }
 }
